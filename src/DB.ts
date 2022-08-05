@@ -17,7 +17,7 @@ export class DB {
 
     public async getAllSellings(tableName: string): Promise<Selling[]>{
         try {
-            const res = await this.connection.promise().query(`select * from ${tableName}`)
+            const res = await this.connection.promise().query(`select * from post_queue where not approved_by is NULL and not approved_by=name`)
             const typed_res = res[0] as Selling[];
             return typed_res;
         } catch(e) {
@@ -52,6 +52,17 @@ export class DB {
             })
         } catch(e) {
             console.error(e);
+        }
+    }
+
+    public async getWithdrawals(tableName: string): Promise<Withdrawal[]> {
+        try {
+            const query = `select * from ${tableName}`;
+            const res = await this.connection.promise().query(query);
+            return res[0] as Withdrawal[]
+        } catch(e) {
+            console.error(e);
+            return [];
         }
     }
 

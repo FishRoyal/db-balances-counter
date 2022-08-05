@@ -22,3 +22,9 @@ type EarnFromSelling = {
     type: "active" | "frozen"
     earn: number
 }
+
+type Withdrawal = {
+    username: string,
+    channel: string,
+    amount: number
+}
