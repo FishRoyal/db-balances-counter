@@ -6,18 +6,15 @@ const dbProcessor = new DBProcessor(db);
 
 (async () => {
     const res = await dbProcessor.countBalances();
-    console.log(res)
     if(typeof res === "undefined") return;
     const res1 = countedBalancesToStrings(res);
-    res1?.forEach((value: Map<string, {active: number, frozen: number}>, key: string) => {
-        console.log("key: ", key, "value: ", value)
-    })
+    const res2 = toJsonStrings(res1);
+    await db.updateBalances("channels", res2)
 })()
 
 function countedBalancesToStrings(countedBalances: EarnFromSelling[]) {
     let dbEarnSt = new Map<string, Map<string, {active: number, frozen: number}>>();
     for(const bal of countedBalances) {
-        console.log("BAL", bal)
         if(typeof dbEarnSt.get(bal.channel) === "undefined") {
             let map = new Map<string, {active: number, frozen: number}>();
             map.set(bal.name, {active: 0, frozen: 0});
@@ -40,4 +37,21 @@ function countedBalancesToStrings(countedBalances: EarnFromSelling[]) {
         val?.set(bal.name , obj);
     }
     return dbEarnSt;
+}
+
+function toJsonStrings(map: Map<string, Map<string, {active: number, frozen: number}>>) {
+
+    let res = new Map<string, string>();
+
+    map.forEach((value_ch: Map<string, {active: number, frozen: number}>, chan: string) => {
+        
+        let str = "{";
+        value_ch.forEach((value_bal: {active: number, frozen: number}, name: string) => {
+            str = str + `"${name}":${JSON.stringify(value_bal)}` + `,`;
+        })
+        str = str.substring(0, str.length - 1) + "}";
+        res.set(chan, str);
+    })
+
+    return res;
 }

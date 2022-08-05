@@ -26,15 +26,6 @@ export class DB {
         }
     }
 
-    public async getRole(name: string, channel: string){
-        const query = `SELECT role FROM invites WHERE name="${name}" AND channel="${channel}"`;
-        try {
-            const res: any = await this.connection.promise().query(query);
-            return res[0][0].role as string;
-        } catch (error) {
-            return "";
-        }
-    }
 
     public async getSellingData(tableName: string, name: string | null, channel: string): Promise<SellingData | undefined> {
         try {
@@ -46,6 +37,21 @@ export class DB {
         } catch(e) {
             console.error(e);
             return undefined;
+        }
+    }
+
+    public async updateBalances(tableName: string, map: Map<string, string>) {
+        try {
+            map.forEach(async (value: string, key: string) => {
+                const query = `update ${tableName} set balances='${value}' where channel='${key}'`;
+                try {
+                    await this.connection.promise().query(query);
+                } catch(e) {
+                    console.error(e);
+                }
+            })
+        } catch(e) {
+            console.error(e);
         }
     }
 

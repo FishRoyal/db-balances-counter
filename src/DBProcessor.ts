@@ -34,7 +34,6 @@ export class DBProcessor {
             if(typeof res === "undefined"){
                 return -1;
             }
-            console.log("ABCDSEJSDLF:J: ", res)
             
             const diff = res.precent - managerPercent;
             return (diff >= 0) ? diff : -2;
